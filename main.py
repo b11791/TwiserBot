@@ -5,19 +5,23 @@ import aiogram
 import sql_queries
 from create_bot import bot, config
 from db import SQLite
+from handlers.menu import menu_router
 from handlers.registration import registration_router
 
 dp = aiogram.Dispatcher()
 
+
 dp.include_routers(
-    registration_router
+    registration_router,
+    menu_router
 )
+
 
 async def create_tables():
     with SQLite() as db:
         db.cursor.execute(sql_queries.create_table_user)
         db.cursor.execute(sql_queries.create_table_move)
-        db.cursor.execute(sql_queries.create_super_user.format(config["ADMIN_TG_ID"], config["ADMIN_USER_NAME"]))
+        # db.cursor.execute(sql_queries.create_super_user.format(config["ADMIN_TG_ID"], config["ADMIN_USER_NAME"]))
         db.connection.commit()
     print("База данных настроена")
 

@@ -18,6 +18,19 @@ ON CONFLICT(tg_id)
 DO NOTHING;
 """
 
+insert_user = """
+INSERT INTO profile (tg_id, username, age, name)
+VALUES ({}, '{}', {}, '{}')
+ON CONFLICT(tg_id) 
+DO NOTHING;
+"""
+
+select_user_id = """
+SELECT 1
+FROM profile
+WHERE tg_id = {}
+"""
+
 create_table_move = """
 CREATE TABLE IF NOT EXISTS acc_movements(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
