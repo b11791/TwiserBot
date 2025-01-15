@@ -5,15 +5,19 @@ import aiogram
 import sql_queries
 from create_bot import bot, config
 from db import SQLite
+from handlers.balance import balance_router
 from handlers.menu import menu_router
 from handlers.registration import registration_router
+from handlers.top_referals import referal_router
 
 dp = aiogram.Dispatcher()
 
 
 dp.include_routers(
     registration_router,
-    menu_router
+    menu_router,
+    balance_router,
+    referal_router,
 )
 
 

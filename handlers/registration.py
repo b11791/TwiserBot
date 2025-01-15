@@ -17,11 +17,18 @@ registration_router = Router()
 class Reg(StatesGroup):
     name = State()
     age = State()
+    ref_id = State()
 
 kb = ReplyKeyboardMarkup(
     resize_keyboard=True,
     keyboard=[
         [KeyboardButton(text="Зарегистрироваться")],
+    ],
+)
+kb_2 = ReplyKeyboardMarkup(
+    resize_keyboard=True,
+    keyboard=[
+        [KeyboardButton(text="Нет реферала")],
     ],
 )
 
@@ -44,6 +51,23 @@ async def reg3(message: aiogram.types.Message, state: FSMContext):
         await message.answer("Возраст должен быть числом")
         return
     await state.update_data(age=message.text)
+    await state.set_state(Reg.ref_id)
+    await message.answer("Введите реферал или нажмите на кнопку", reply_markup=kb_2)
+
+
+@registration_router.message(Reg.ref_id)
+async def reg4(message: aiogram.types.Message, state: FSMContext):
+    ref_id = message.text
+
+    if ref_id != "Нет реферала":
+        with SQLite() as db:
+            exist = db.cursor.execute(sql_queries.select_user_id.format(ref_id)).fetchone()
+        if not exist:
+            await message.answer("Такого пользователя нет")
+            return
+    else:
+        ref_id = "NULL"
+
     data = await state.get_data()
     await state.clear()
     try:
@@ -52,7 +76,8 @@ async def reg3(message: aiogram.types.Message, state: FSMContext):
                 message.from_user.id,
                 message.from_user.username,
                 data["age"],
-                data["name"]
+                data["name"],
+                ref_id,
             ))
             db.connection.commit()
     except Exception as e:
