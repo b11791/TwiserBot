@@ -28,7 +28,7 @@ DO NOTHING;
 select_user_id = """
 SELECT 1
 FROM profile
-WHERE tg_id = '{}'
+WHERE username = '{}'
 """
 
 create_table_move = """
@@ -54,3 +54,7 @@ GROUP BY p2.referer_id,  p2.username
 ORDER BY ref_count DESC
 LIMIT 10
 """
+
+take_operation = """UPDATE profile SET balance = {} WHERE username = {}"""
+
+give_operation = """"""
