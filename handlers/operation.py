@@ -5,15 +5,14 @@ from aiogram.fsm.state import StatesGroup, State
 
 import sql_queries
 from db import SQLite
-from handlers.balance import balance_router
 
 operation_router = Router()
-#
+
 class Transgender(StatesGroup):
     name = State()
     amount = State()
-#
-# #
+
+
 @operation_router.message(aiogram.F.text == "Перевод")
 async def create_tables(message: aiogram.types.Message, state: FSMContext):
     await message.answer(f"Введите логин пользователя, которому хотите перевести")
@@ -24,7 +23,7 @@ async def create_tables(message: aiogram.types.Message, state: FSMContext):
 async def create_tables(message: aiogram.types.Message, state: FSMContext):
     name = message.text
     with SQLite() as db:
-        exist = db.cursor.execute(sql_queries.select_user_id.format(name)).fetchone()
+        exist = db.cursor.execute(sql_queries.select_user_by_username.format(name)).fetchone()
     if not exist:
         await message.answer("Такого пользователя нет")
         return
@@ -48,21 +47,32 @@ async def create_tables(message: aiogram.types.Message, state: FSMContext):
 
     with SQLite() as db:
         balance = db.cursor.execute(sql_queries.select_user_balance.format(message.from_user.id)).fetchone()[0] or 0
-    if balance < amount:
+    if balance < int(amount):
         await message.answer(
             f"У вас не хватает денег для перевода \n <b>Текущий баланс: {balance}</b> \n <b>Сумма перевода: {amount}</b>",
             parse_mode="html",
         )
         return
+    await state.update_data(amount=amount)
 
     data = await state.get_data()
     await state.clear()
+    perevod = int(data["amount"]) - ((int(data["amount"]) / 100) * 30)
     with SQLite() as db:
-        db.cursor.execute(sql_queries.insert_user.format(
-            data["amount"],
+        db.cursor.execute(sql_queries.increase_balance.format(
+            perevod,
             data["name"],
+        ))
+        db.cursor.execute(sql_queries.decrease_balance.format(
+            data["amount"],
+            message.from_user.username,
         ))
         db.connection.commit()
 
+    with SQLite() as db:
+        balance = db.cursor.execute(sql_queries.select_user_balance.format(message.from_user.id)).fetchone()[0] or 0
 
-
+    await message.answer(
+        f"Вы перевели <b>{amount}</b> (комиссия 30%) пользователю <b>{data['name']}</b>\nТекущий баланс: <b>{balance}</b>",
+        parse_mode="html",
+    )

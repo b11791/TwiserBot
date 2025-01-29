@@ -25,7 +25,13 @@ ON CONFLICT(tg_id)
 DO NOTHING;
 """
 
-select_user_id = """
+select_user_by_tg_id = """
+SELECT 1
+FROM profile
+WHERE tg_id = {}
+"""
+
+select_user_by_username = """
 SELECT 1
 FROM profile
 WHERE username = '{}'
@@ -55,6 +61,11 @@ ORDER BY ref_count DESC
 LIMIT 10
 """
 
-take_operation = """UPDATE profile SET balance = {} WHERE username = {}"""
+increase_balance = """
+UPDATE profile SET balance = balance + {} WHERE username = '{}'
+"""
 
-give_operation = """"""
+decrease_balance = """
+UPDATE profile SET balance = balance - {} WHERE username = '{}'
+"""
+

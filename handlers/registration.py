@@ -61,7 +61,7 @@ async def reg4(message: aiogram.types.Message, state: FSMContext):
 
     if ref_id != "Нет реферала":
         with SQLite() as db:
-            exist = db.cursor.execute(sql_queries.select_user_id.format(ref_id)).fetchone()
+            exist = db.cursor.execute(sql_queries.select_user_by_tg_id.format(ref_id)).fetchone()
         if not exist:
             await message.answer("Такого пользователя нет")
             return

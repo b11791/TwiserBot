@@ -7,6 +7,7 @@ from create_bot import bot, config
 from db import SQLite
 from handlers.balance import balance_router
 from handlers.menu import menu_router
+from handlers.money_import import money_router
 from handlers.operation import operation_router
 from handlers.registration import registration_router
 from handlers.top_referals import referal_router
@@ -20,6 +21,7 @@ dp.include_routers(
     balance_router,
     referal_router,
     operation_router,
+    money_router,
 )
 
 
