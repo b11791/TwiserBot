@@ -23,13 +23,11 @@ async def create_tables(message: aiogram.types.Message, state: FSMContext):
     if not message.text.isdigit():
         await message.answer("Сумма ввода должна быть числом")
         return
-    await state.update_data(summ=summ)
-    data = await state.get_data()
     await state.clear()
 
     with SQLite() as db:
         db.cursor.execute(sql_queries.increase_balance.format(
-            data['summ'],
+            summ,
             message.from_user.username,
         ))
         balance = db.cursor.execute(sql_queries.select_user_balance.format(message.from_user.id)).fetchone()[0] or 0

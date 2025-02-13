@@ -69,3 +69,6 @@ decrease_balance = """
 UPDATE profile SET balance = balance - {} WHERE username = '{}'
 """
 
+set_balance = """
+UPDATE profile SET balance = {} WHERE username = '{}'
+"""
