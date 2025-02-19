@@ -2,6 +2,7 @@ import aiogram
 from aiogram import Router
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 
+from filters.register_check import AdminCheckFilter
 from funcs import design_buttons
 
 menu_router = Router()

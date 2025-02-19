@@ -1,6 +1,3 @@
-import asyncio
-import traceback
-
 import aiogram
 from aiogram import Router
 from aiogram.fsm.context import FSMContext
@@ -9,8 +6,8 @@ from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 
 import sql_queries
 from db import SQLite
-from filters.register_check import UnregisterCheckFilter
-from handlers.menu import kb_menu
+from filters.register_check import UnregisterCheckFilter, BlockedCheckFilter
+from handlers.user.menu import kb_menu
 
 registration_router = Router()
 
@@ -31,6 +28,12 @@ kb_2 = ReplyKeyboardMarkup(
         [KeyboardButton(text="Нет реферала")],
     ],
 )
+
+
+@registration_router.message(BlockedCheckFilter())
+async def reg1(message: aiogram.types.Message, state: FSMContext):
+    await message.answer("Иди нахуй")
+
 
 @registration_router.message(UnregisterCheckFilter(), aiogram.F.text == "Зарегистрироваться")
 async def reg1(message: aiogram.types.Message, state: FSMContext):

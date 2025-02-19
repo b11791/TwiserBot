@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS profile(
     age INTEGER,
     balance INTEGER DEFAULT 0 NOT NULL,
     is_admin BOOL DEFAULT 0 NOT NULL,
+    is_blocked BOOL DEFAULT 0 NOT NULL,
     referer_id INTEGER,
     FOREIGN KEY (referer_id) REFERENCES profile (tg_id)
 );
@@ -71,4 +72,45 @@ UPDATE profile SET balance = balance - {} WHERE username = '{}'
 
 set_balance = """
 UPDATE profile SET balance = {} WHERE username = '{}'
+"""
+
+
+select_user_by_tg_id = """
+SELECT 1
+FROM profile
+WHERE tg_id = {}
+"""
+
+
+is_admin = """
+SELECT 1
+FROM profile
+WHERE tg_id = {} AND
+is_admin = 1
+"""
+
+
+select_all_users = """
+SELECT tg_id, username, name
+FROM profile
+"""
+
+
+block_user = """
+UPDATE profile SET is_blocked = 1 WHERE username = '{}'
+"""
+
+
+is_blocked = """
+SELECT 1
+FROM profile
+WHERE tg_id = {} AND
+is_blocked = 1
+"""
+
+
+select_top_money_users = """
+SELECT username, balance
+FROM profile
+ORDER BY balance DESC
 """
