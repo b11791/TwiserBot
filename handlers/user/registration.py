@@ -37,6 +37,12 @@ async def reg1(message: aiogram.types.Message, state: FSMContext):
 
 @registration_router.message(UnregisterCheckFilter(), aiogram.F.text == "Зарегистрироваться")
 async def reg1(message: aiogram.types.Message, state: FSMContext):
+    with SQLite() as db:
+        reg_status = db.cursor.execute(sql_queries.select_reg).fetchone()
+
+    if not reg_status[0]:
+        await message.answer("Хуй соси")
+        return
     await state.set_state(Reg.name)
     await message.answer("Введите своё имя")
 

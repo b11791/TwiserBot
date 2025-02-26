@@ -19,6 +19,24 @@ ON CONFLICT(tg_id)
 DO NOTHING;
 """
 
+create_table_switches = """
+CREATE TABLE IF NOT EXISTS switches(
+    id INTEGER PRIMARY KEY,    
+    parameter TEXT UNIQUE NOT NULL,
+    value BOOL DEFAULT 0 NOT NULL
+);
+"""
+
+insert_registration_parameter = """
+insert or replace into switches (parameter) 
+values ('registration');
+"""
+
+insert_game_parameter = """
+insert or replace into switches (parameter) 
+values ('game');
+"""
+
 insert_user = """
 INSERT INTO profile (tg_id, username, age, name, referer_id)
 VALUES ({}, '{}', {}, '{}', {})
@@ -38,14 +56,6 @@ FROM profile
 WHERE username = '{}'
 """
 
-create_table_move = """
-CREATE TABLE IF NOT EXISTS acc_movements(
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    money_flow INTEGER,
-    profile_id INTEGER,
-    FOREIGN KEY (profile_id) REFERENCES profile (tg_id)
-);
-"""
 
 select_user_balance = """
 SELECT balance
@@ -113,4 +123,32 @@ select_top_money_users = """
 SELECT username, balance
 FROM profile
 ORDER BY balance DESC
+"""
+
+select_reg = """
+SELECT value
+FROM switches
+where parameter = 'registration'
+"""
+
+select_game = """
+SELECT value
+FROM switches
+where parameter = 'game'
+"""
+
+reg_off = """
+UPDATE switches SET value = False WHERE parameter = 'registration'
+"""
+
+reg_on = """
+UPDATE switches SET value = True WHERE parameter = 'registration'
+"""
+
+game_off = """
+UPDATE switches SET value = False WHERE parameter = 'game'
+"""
+
+game_on = """
+UPDATE switches SET value = True WHERE parameter = 'game'
 """

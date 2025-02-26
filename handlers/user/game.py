@@ -19,6 +19,12 @@ class Game(StatesGroup):
 
 @game_router.message(aiogram.F.text == "Играть")
 async def roll_dice(message, state: FSMContext):
+    with SQLite() as db:
+        game_status = db.cursor.execute(sql_queries.select_game).fetchone()
+
+    if not game_status[0]:
+        await message.answer("Хуй соси")
+        return
     await message.answer("Ваша ставка:")
     await state.set_state(Game.stavka)
 

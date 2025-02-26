@@ -6,6 +6,7 @@ import sql_queries
 from create_bot import bot
 from db import SQLite
 from handlers.admin.Kick import kick_router
+from handlers.admin.switches import switches_router
 from handlers.admin.top_money import top_money_router
 from handlers.user.balance import balance_router
 from handlers.user.game import game_router
@@ -20,6 +21,7 @@ dp = aiogram.Dispatcher()
 
 
 dp.include_routers(
+    switches_router,
     admin_menu_router,
     registration_router,
     kick_router,
@@ -36,7 +38,9 @@ dp.include_routers(
 async def create_tables():
     with SQLite() as db:
         db.cursor.execute(sql_queries.create_table_user)
-        db.cursor.execute(sql_queries.create_table_move)
+        db.cursor.execute(sql_queries.create_table_switches)
+        db.cursor.execute(sql_queries.insert_registration_parameter)
+        db.cursor.execute(sql_queries.insert_game_parameter)
         # db.cursor.execute(sql_queries.create_super_user.format(config["ADMIN_TG_ID"], config["ADMIN_USER_NAME"]))
         db.connection.commit()
     print("База данных настроена")
